@@ -1,0 +1,117 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: cortex
+  name: cortex
+spec:
+  replicas: 0
+  revisionHistoryLimit: 5
+  selector:
+    app: cortex
+  strategy:
+    activeDeadlineSeconds: 21600
+    recreateParams:
+      timeoutSeconds: 600
+    resources:
+      limits:
+        cpu: "3"
+        memory: 4Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cortex
+    spec:
+      containers:
+      - env:
+        - name: POD_CPU_REQUEST
+          valueFrom:
+            resourceFieldRef:
+              containerName: cortex
+              divisor: 1m
+              resource: requests.cpu
+        - name: POD_CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: cortex
+              divisor: 1m
+              resource: limits.cpu
+        - name: POD_MEM_REQUEST
+          valueFrom:
+            resourceFieldRef:
+              containerName: cortex
+              divisor: "0"
+              resource: requests.memory
+        - name: POD_MEM_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: cortex
+              divisor: "0"
+              resource: limits.memory
+        - name: APP_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels['app']
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: http_proxy
+        - name: https_proxy
+        envFrom:
+        - configMapRef:
+            name: default-variable
+        image: kustomize_image
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 360
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        name: cortex
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8081
+          protocol: TCP
+        - containerPort: 6041
+          protocol: TCP
+        - containerPort: 6042
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        resources:
+          limits:
+            cpu: "3"
+            memory: 4Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - type: "ConfigChange"

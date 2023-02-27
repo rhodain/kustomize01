@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cortex
+  name: cortex
+spec:
+  ports:
+  - name: 8080-tcp
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  - name: 8081-tcp
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  - name: 6041-tcp
+    port: 6041
+    protocol: TCP
+    targetPort: 6041
+  - name: 6042-tcp
+    port: 6042
+    protocol: TCP
+    targetPort: 6042
+  selector:
+    app: cortex
+  sessionAffinity: None
+  type: ClusterIP

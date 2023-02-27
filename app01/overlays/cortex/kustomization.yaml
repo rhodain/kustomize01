@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base/cortex
+- cm.yaml
+
+commonAnnotations:
+  cm/version: v1
+
+images:
+- name: kustomize_image
+  newName: tools01-tst.fortisbank.com.pl:8192/cortex
+  newTag: dev

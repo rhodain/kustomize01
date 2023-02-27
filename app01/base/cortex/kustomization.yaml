@@ -1,0 +1,3 @@
+resources:
+- dc.yaml
+- svc.yaml

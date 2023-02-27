@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  JAVA_OPTS: "-Xmx512m -Xss512k -Dnfx.test-env=false -Dlog4j2.formatMsgNoLookups=true
+    -Xdebug\r\n-Xrunjdwp:transport=dt_socket,address=9998,server=y,suspend=n\r\n-Dcom.sun.management.jmxremote.rmi.port=9999\r\n-Dcom.sun.management.jmxremote=true\r\n-Dcom.sun.management.jmxremote.port=9999\r\n-Dcom.sun.management.jmxremote.ssl=false\r\n-Dcom.sun.management.jmxremote.authenticate=false\r\n-Dcom.sun.management.jmxremote.local.only=false\r\n-Djava.rmi.server.hostname=0.0.0.0\r\n-XX:+UseSerialGC"
+  SPRING_PROFILES_ACTIVE: live, openshift
+kind: ConfigMap
+metadata:
+  name: cortex
